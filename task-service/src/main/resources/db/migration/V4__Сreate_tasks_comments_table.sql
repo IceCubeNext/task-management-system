@@ -1,4 +1,4 @@
-CREATE TABLE task_comment
+CREATE TABLE tasks_comments
 (
     id         BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     task_id    BIGINT                              NOT NULL,
@@ -6,10 +6,10 @@ CREATE TABLE task_comment
     CONSTRAINT pk_task_comment PRIMARY KEY (id),
     CONSTRAINT fk_task_comment_task
         FOREIGN KEY (task_id)
-            REFERENCES task (id)
+            REFERENCES tasks (id)
             ON DELETE CASCADE,
     CONSTRAINT fk_task_comment_comment
         FOREIGN KEY (comment_id)
-            REFERENCES comment (id)
+            REFERENCES comments (id)
             ON DELETE CASCADE
 );

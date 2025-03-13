@@ -1,4 +1,4 @@
-CREATE TABLE task
+CREATE TABLE tasks
 (
     id          BIGINT GENERATED ALWAYS AS IDENTITY NOT NULL,
     title       VARCHAR(255)                        NOT NULL,
@@ -10,10 +10,10 @@ CREATE TABLE task
     CONSTRAINT pk_task PRIMARY KEY (id),
     CONSTRAINT fk_task_author
         FOREIGN KEY (author_id)
-            REFERENCES user (id)
+            REFERENCES users (id)
             ON DELETE CASCADE,
     CONSTRAINT fk_task_performer
         FOREIGN KEY (performer_id)
-            REFERENCES user (id)
+            REFERENCES users (id)
             ON DELETE CASCADE
 );
