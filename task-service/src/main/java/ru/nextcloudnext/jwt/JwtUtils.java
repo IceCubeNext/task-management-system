@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import ru.nextcloudnext.exception.JwtCustomException;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 
 @Slf4j

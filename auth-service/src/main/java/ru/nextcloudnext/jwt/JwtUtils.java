@@ -13,8 +13,8 @@ import ru.nextcloudnext.exception.JwtCustomException;
 import ru.nextcloudnext.exception.JwtRefreshExpiredException;
 import ru.nextcloudnext.model.User;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 
