@@ -1,6 +1,7 @@
 package ru.nextcloudnext.advice;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,6 @@ import ru.nextcloudnext.exception.NotFoundException;
 import ru.nextcloudnext.utility.Constants;
 
 
-import javax.validation.ConstraintViolationException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLIntegrityConstraintViolationException;

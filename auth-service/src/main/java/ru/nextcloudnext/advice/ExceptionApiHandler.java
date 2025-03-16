@@ -1,6 +1,7 @@
 package ru.nextcloudnext.advice;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ import ru.nextcloudnext.exception.JwtCustomException;
 import ru.nextcloudnext.exception.JwtRefreshExpiredException;
 import ru.nextcloudnext.utility.Constants;
 
-import javax.validation.ConstraintViolationException;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
