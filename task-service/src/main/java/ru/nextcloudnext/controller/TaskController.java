@@ -24,8 +24,8 @@ public class TaskController {
     public List<TaskDto> getTasks(@RequestParam(required = false) Long authorId,
                                   @RequestParam(required = false) Long performerId,
                                   @RequestParam(required = false) String searchValue,
-                                  @RequestParam(defaultValue = "0") Integer skip,
-                                  @RequestParam(defaultValue = "10") Integer take) {
+                                  @RequestParam(required = false) Integer skip,
+                                  @RequestParam(required = false) Integer take) {
         TaskSearchParameters parameters = new TaskSearchParameters(authorId, performerId, searchValue);
         log.info("Get tasks from={} size={} authorId={} performerId={} text={}",
                 skip, take, authorId, performerId, searchValue);

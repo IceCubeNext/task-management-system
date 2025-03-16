@@ -1,11 +1,14 @@
 package ru.nextcloudnext.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.nextcloudnext.dto.*;
 import ru.nextcloudnext.exception.NotFoundException;
+import ru.nextcloudnext.jwt.UserDetailsImpl;
 import ru.nextcloudnext.mapper.CommentMapper;
 import ru.nextcloudnext.mapper.TaskMapper;
 import ru.nextcloudnext.model.Comment;
@@ -84,6 +87,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto updateTask(Long id, NewTaskDto taskDto) {
         Task task = findById(id);
+        checkTaskChangePermissions(task);
         if (StringUtils.hasText(taskDto.getTitle()) && !taskDto.getTitle().equals(task.getTitle())) {
             task.setTitle(taskDto.getTitle());
         }
@@ -105,6 +109,19 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public void deleteTask(Long id) {
-        repository.delete(findById(id));
+        Task task = findById(id);
+        checkTaskChangePermissions(task);
+        repository.delete(task);
+    }
+
+    private void checkTaskChangePermissions(Task task) {
+        UserDetailsImpl details = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (details == null) {
+            throw new AuthorizationDeniedException("Access denied. Are you anonymous user?");
+        }
+        if (details.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+                && !Objects.equals(details.getId(), task.getAuthor().getId())) {
+            throw new AuthorizationDeniedException("Access denied. You do not have permission to perform this task");
+        }
     }
 }

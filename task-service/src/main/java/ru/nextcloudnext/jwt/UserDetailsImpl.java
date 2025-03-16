@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.nextcloudnext.model.Role;
-import ru.nextcloudnext.model.UserStatus;
-import ru.nextcloudnext.model.User;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,32 +15,26 @@ public class UserDetailsImpl implements UserDetails {
 
     private final Long id;
     private final String login;
-    private final String password;
-    private final boolean enabled;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String login, String password, boolean enabled, Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(Long id, String login, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.login = login;
-        this.password = password;
-        this.enabled = enabled;
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(User user) {
-        Set<GrantedAuthority> authoritySet = rolesToGrantedAuthorities(new HashSet<>(user.getRoles()));
+    public static UserDetailsImpl build(Long id, String login, Set<String> authorities) {
+        Set<GrantedAuthority> authoritySet = rolesToGrantedAuthorities(new HashSet<>(authorities));
         return new UserDetailsImpl(
-                user.getId(),
-                user.getLogin(),
-                user.getPassword(),
-                user.getUserStatus().equals(UserStatus.ACTIVE),
+                id,
+                login,
                 authoritySet
         );
     }
 
-    private static Set<GrantedAuthority> rolesToGrantedAuthorities(Set<Role> userRoles) {
+    private static Set<GrantedAuthority> rolesToGrantedAuthorities(Set<String> userRoles) {
         return userRoles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
+                .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
     }
 
@@ -60,12 +51,7 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     @Override
     public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
+        return "";
     }
 
     @Override

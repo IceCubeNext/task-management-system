@@ -17,10 +17,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * @author Vladimir F. 10.01.2023
- */
 
 @Slf4j
 @Component
@@ -55,10 +54,11 @@ public class JwtUtils {
 
     public String generateAccessToken(User user, String hash) {
         Date validity = new Date(new Date().getTime() + accessTokenValidity);
+        List<String> roles = user.getRoles().stream().map(r -> r.getRoleName().toString()).collect(Collectors.toList());
         return Jwts.builder()
                 .setSubject(user.getLogin())
                 .claim("id", user.getId())
-                .claim("roles", user.getRoles())
+                .claim("roles", roles)
                 .claim("hash", hash)
                 .setIssuedAt(new Date())
                 .setExpiration(validity)

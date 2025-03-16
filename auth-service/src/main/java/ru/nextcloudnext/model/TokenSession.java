@@ -7,9 +7,6 @@ import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.Objects;
 
-/**
- * @author Vladimir F. 27.03.2024
- */
 @Entity
 @Table(name = "token_sessions")
 @Getter

@@ -12,4 +12,5 @@ public class UserDto {
     private String firstname;
     private String lastname;
     private String patronymic;
+    private String fullName;
 }

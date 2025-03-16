@@ -53,7 +53,7 @@ public class ExceptionApiHandler {
 
     @ExceptionHandler(JwtCustomException.class)
     public ResponseEntity<ApiError> JwtCustomException(JwtCustomException exception) {
-        log.error("Jwt custom exception." + exception.getMessage());
+        log.error("Jwt custom exception.{}", exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiError.builder()
@@ -66,7 +66,7 @@ public class ExceptionApiHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ApiError> onExpiredJwtException(ExpiredJwtException exception) {
-        log.error("Jwt access is expired. Access denied." + exception.getMessage());
+        log.error("Jwt access is expired. Access denied.{}", exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiError.builder()
@@ -79,7 +79,7 @@ public class ExceptionApiHandler {
 
     @ExceptionHandler(JwtRefreshExpiredException.class)
     public ResponseEntity<ApiError> JwtRefreshExpiredException(JwtRefreshExpiredException exception) {
-        log.error("Jwt refresh is expired. Access denied." + exception.getMessage());
+        log.error("Jwt refresh is expired. Access denied.{}", exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ApiError.builder()
@@ -121,7 +121,7 @@ public class ExceptionApiHandler {
 
     private ResponseEntity<ApiError> getViolationResponse(List<Violation> violations) {
         for (Violation violation : violations) {
-            log.error("error validation. " + violation.getFieldName() + ": " + violation.getMessage());
+            log.error("error validation. {}: {}", violation.getFieldName(), violation.getMessage());
         }
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

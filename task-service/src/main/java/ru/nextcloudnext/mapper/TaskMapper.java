@@ -5,7 +5,7 @@ import ru.nextcloudnext.dto.NewTaskDto;
 import ru.nextcloudnext.dto.TaskDto;
 import ru.nextcloudnext.model.Task;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface TaskMapper {
     TaskDto toDto(Task task);
 

@@ -2,12 +2,15 @@ package ru.nextcloudnext.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.nextcloudnext.dto.*;
 import ru.nextcloudnext.exception.ConflictException;
 import ru.nextcloudnext.exception.NotFoundException;
+import ru.nextcloudnext.jwt.UserDetailsImpl;
 import ru.nextcloudnext.mapper.CommentMapper;
 import ru.nextcloudnext.model.Comment;
 import ru.nextcloudnext.model.Task;
@@ -40,8 +43,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public List<CommentDto> getComments(Integer skip, Integer take, Long taskId) {
-        PageRequest page = PageRequest.of(skip > 0 ? skip / take : 0, take);
-        return repository.findAllByTaskId(taskId, page).stream().map(mapper::toDto).collect(Collectors.toList());
+        if (take == null || skip == null) {
+            return repository.findAllByTaskId(taskId).stream().map(mapper::toDto).collect(Collectors.toList());
+        } else {
+            PageRequest page = PageRequest.of(skip > 0 ? skip / take : 0, take);
+            return repository.findAllByTaskId(taskId, page).stream().map(mapper::toDto).collect(Collectors.toList());
+        }
     }
 
     @Override
@@ -49,6 +56,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto addComment(Long taskId, NewCommentDto commentDto) {
         User user = userService.findById(commentDto.getAuthor().getId());
         Task task = taskService.findById(taskId);
+        checkCommentChangePermissions(task);
         Comment comment = mapper.toModel(commentDto);
         comment.setAuthor(user);
         comment.setTask(task);
@@ -59,6 +67,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentDto updateComment(Long taskId, Long id, NewCommentDto commentDto) {
         Comment comment = isCommentBelongToTask(taskId, id);
+        checkCommentChangePermissions(taskService.findById(taskId));
         if (StringUtils.hasText(commentDto.getTitle()) && !commentDto.getTitle().equals(comment.getTitle())) {
             comment.setTitle(commentDto.getTitle());
         }
@@ -72,6 +81,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void deleteComment(Long taskId, Long id) {
+        checkCommentChangePermissions(taskService.findById(taskId));
         repository.delete(isCommentBelongToTask(taskId, id));
     }
 
@@ -85,5 +95,16 @@ public class CommentServiceImpl implements CommentService {
             );
         }
         return comment;
+    }
+
+    private void checkCommentChangePermissions(Task task) {
+        UserDetailsImpl details = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (details == null) {
+            throw new AuthorizationDeniedException("Access denied. Are you anonymous user?");
+        }
+        if (details.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+                && !Objects.equals(details.getId(), task.getAuthor().getId())) {
+            throw new AuthorizationDeniedException("Access denied. You do not have permission");
+        }
     }
 }

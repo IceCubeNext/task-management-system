@@ -7,9 +7,6 @@ import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.Objects;
 
-/**
- * @author Vladimir F. 22.03.2024 13:12
- */
 @Entity
 @Table(name = "roles")
 @Getter

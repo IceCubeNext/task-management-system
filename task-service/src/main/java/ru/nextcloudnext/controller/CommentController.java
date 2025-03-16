@@ -21,8 +21,8 @@ public class CommentController {
 
     @GetMapping("/{taskId}/comments")
     public List<CommentDto> getCommentsByTaskId(@PathVariable Long taskId,
-                                                @RequestParam(defaultValue = "0") Integer skip,
-                                                @RequestParam(defaultValue = "10") Integer take) {
+                                                @RequestParam(required = false) Integer skip,
+                                                @RequestParam(required = false) Integer take) {
         log.info("Get comments from task with id={} skip={} take={}", taskId, skip, take);
         return commentService.getComments(skip, take, taskId);
     }
@@ -38,7 +38,7 @@ public class CommentController {
     @PatchMapping("/{taskId}/comments/{id}")
     public CommentDto updateComment(@PathVariable Long taskId,
                                     @PathVariable Long id,
-                                    @RequestBody @Validated({OnUpdate.class})NewCommentDto commentDto) {
+                                    @RequestBody @Validated({OnUpdate.class}) NewCommentDto commentDto) {
         log.info("Patch comment with id={} under task with id={}, dto={}", id, taskId, commentDto);
         return commentService.updateComment(taskId, id, commentDto);
     }

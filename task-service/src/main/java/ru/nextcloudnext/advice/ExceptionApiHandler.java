@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -46,7 +47,7 @@ public class ExceptionApiHandler {
 
     @ExceptionHandler(JwtCustomException.class)
     public ResponseEntity<ApiError> JwtCustomException(JwtCustomException exception) {
-        log.error("Jwt custom exception." + exception.getMessage());
+        log.error("Jwt custom exception.{}", exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiError.builder()
@@ -59,7 +60,7 @@ public class ExceptionApiHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ApiError> onExpiredJwtException(ExpiredJwtException exception) {
-        log.error("Jwt access is expired. Access denied." + exception.getMessage());
+        log.error("Jwt access is expired. Access denied.{}", exception.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiError.builder()
@@ -78,6 +79,19 @@ public class ExceptionApiHandler {
                 .body(ApiError.builder()
                         .status(HttpStatus.UNAUTHORIZED)
                         .reason("Jwt has problem. Access denied.")
+                        .message(exception.getMessage())
+                        .timestamp(LocalDateTime.now().format(Constants.ERROR_TIME_FORMATTER))
+                        .build());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ApiError> onAuthorizationDeniedException(AuthorizationDeniedException exception) {
+        log.error(exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiError.builder()
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .reason("Access denied. Check your authorities.")
                         .message(exception.getMessage())
                         .timestamp(LocalDateTime.now().format(Constants.ERROR_TIME_FORMATTER))
                         .build());

@@ -5,7 +5,7 @@ import ru.nextcloudnext.dto.CommentDto;
 import ru.nextcloudnext.dto.NewCommentDto;
 import ru.nextcloudnext.model.Comment;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface CommentMapper {
     CommentDto toDto(Comment comment);
 

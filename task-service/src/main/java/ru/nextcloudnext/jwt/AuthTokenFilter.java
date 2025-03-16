@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.nextcloudnext.exception.JwtCustomException;
@@ -13,7 +14,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.util.Set;
 
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
@@ -34,7 +37,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (token != null) {
                 jwtUtils.validateAccessToken(token);
                 String user = jwtUtils.getUsernameFromAccessToken(token);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, null);
+                Long id = jwtUtils.getIdFromAccessToken(token);
+                Set<String> roles = jwtUtils.getRolesFromAccessToken(token);
+                UserDetails userDetails = UserDetailsImpl.build(id, user, roles);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder
                         .getContext()

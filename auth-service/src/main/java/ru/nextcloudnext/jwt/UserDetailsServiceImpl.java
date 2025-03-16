@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.nextcloudnext.model.User;
 import ru.nextcloudnext.repository.UserRepository;
 
-/**
- * @author Vladimir F. 10.01.2023
- */
-
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 

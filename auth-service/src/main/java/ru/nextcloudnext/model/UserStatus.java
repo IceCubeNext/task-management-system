@@ -1,8 +1,5 @@
 package ru.nextcloudnext.model;
 
-/**
- * @author Vladimir F. 22.03.2024 12:46
- */
 public enum UserStatus {
 
     ACTIVE("Активен"),

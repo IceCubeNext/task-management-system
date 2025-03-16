@@ -11,6 +11,9 @@ import ru.nextcloudnext.exception.JwtCustomException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -34,6 +37,27 @@ public class JwtUtils {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public Long getIdFromAccessToken(String token) {
+        try {
+            return Jwts.parser().setSigningKey(secretAccessKey).parseClaimsJws(token).getBody().get("id", Long.class);
+        } catch (IndexOutOfBoundsException exception) {
+            throw new JwtCustomException(exception.getMessage());
+        }
+    }
+
+    public Set<String> getRolesFromAccessToken(String token) {
+        try {
+            Set<String> roles = new HashSet<>();
+            List<?> list = Jwts.parser().setSigningKey(secretAccessKey).parseClaimsJws(token).getBody().get("roles", List.class);
+            for (Object o : list) {
+                roles.add(o.toString());
+            }
+            return roles;
+        } catch (IndexOutOfBoundsException exception) {
+            throw new JwtCustomException(exception.getMessage());
+        }
     }
 
     @Nullable

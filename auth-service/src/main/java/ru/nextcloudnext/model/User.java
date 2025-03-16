@@ -9,9 +9,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * @author Vladimir F. 22.03.2024 12:43
- */
 @Entity
 @Table(name = "users")
 @Getter

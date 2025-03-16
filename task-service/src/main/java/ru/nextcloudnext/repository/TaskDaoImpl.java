@@ -40,9 +40,13 @@ public class TaskDaoImpl implements TaskDao {
         }
 
         Predicate finalPredicate = cb.and(predicates.toArray(new Predicate[0]));
-        return em.createQuery(cq.where(finalPredicate))
-                .setFirstResult(skip)
-                .setMaxResults(take)
-                .getResultList();
+        if (skip == null || take == null) {
+            return em.createQuery(cq.where(finalPredicate)).getResultList();
+        } else {
+            return em.createQuery(cq.where(finalPredicate))
+                    .setFirstResult(skip)
+                    .setMaxResults(take)
+                    .getResultList();
+        }
     }
 }
