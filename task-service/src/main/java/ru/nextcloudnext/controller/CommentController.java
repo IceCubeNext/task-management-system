@@ -33,9 +33,9 @@ public class CommentController {
     public List<CommentDto> getCommentsByTaskId(
             @Parameter(description = "Идентификатор задачи", required = true, example = "1")
             @PathVariable Long taskId,
-            @Parameter(description = "Номер страницы", required = false, example = "0")
+            @Parameter(description = "Номер страницы", example = "0")
             @RequestParam(required = false) Integer skip,
-            @Parameter(description = "Количество элементов на странице", required = false, example = "10")
+            @Parameter(description = "Количество элементов на странице", example = "10")
             @RequestParam(required = false) Integer take) {
         log.info("Get comments from task with id={} skip={} take={}", taskId, skip, take);
         return commentService.getComments(skip, take, taskId);

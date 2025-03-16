@@ -32,15 +32,15 @@ public class TaskController {
     @SecurityRequirement(name = "JWT")
     @GetMapping
     public List<TaskDto> getTasks(
-            @Parameter(description = "Идентификатор автора задачи", required = false, example = "1")
+            @Parameter(description = "Идентификатор автора задачи", example = "1")
             @RequestParam(required = false) Long authorId,
-            @Parameter(description = "Идентификатор исполнителя задачи", required = false, example = "1")
+            @Parameter(description = "Идентификатор исполнителя задачи", example = "1")
             @RequestParam(required = false) Long performerId,
-            @Parameter(description = "Текст из заголовка или описания в любом регистре", required = false, example = "Задача 1")
+            @Parameter(description = "Текст из заголовка или описания в любом регистре", example = "Задача 1")
             @RequestParam(required = false) String searchValue,
-            @Parameter(description = "Номер страницы", required = false, example = "0")
+            @Parameter(description = "Номер страницы", example = "0")
             @RequestParam(required = false) Integer skip,
-            @Parameter(description = "Количество элементов на странице", required = false, example = "10")
+            @Parameter(description = "Количество элементов на странице", example = "10")
             @RequestParam(required = false) Integer take) {
         TaskSearchParameters parameters = new TaskSearchParameters(authorId, performerId, searchValue);
         log.info("Get tasks from={} size={} authorId={} performerId={} text={}",
