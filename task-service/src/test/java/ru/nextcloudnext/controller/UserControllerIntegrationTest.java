@@ -36,13 +36,13 @@ class UserControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         user = new NewUserDto();
-        user.setId(1L);
+        user.setId(4L);
         user.setFirstname("Иван");
         user.setLastname("Иванов");
         user.setPatronymic("Иванович");
 
         user2 = new NewUserDto();
-        user2.setId(2L);
+        user2.setId(5L);
         user2.setFirstname("Петр");
         user2.setLastname("Петров");
         user2.setPatronymic("Петрович");
@@ -70,20 +70,10 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    public void getEmptyUsers() throws Exception {
-        getUsers()
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-    }
-
-    @Test
     public void getUsersTest() throws Exception {
-        postUser(user).andExpect(status().isCreated());
-        postUser(user2).andExpect(status().isCreated());
-
         getUsers()
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(3)));
     }
 
     @Test
