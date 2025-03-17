@@ -29,5 +29,7 @@ public class NewUserDto {
     @Size(min = 1, max = 255, message = "{lastname field's size should be from 1 to 255 letters}", groups = {OnCreate.class, OnUpdate.class})
     private String lastname;
     @Schema(description = "Отчество", example = "Иванович")
+    @NotBlank(message = "{patronymic should not be blank}", groups = OnCreate.class)
+    @Size(min = 1, max = 255, message = "{patronymic field's size should be from 1 to 255 letters}", groups = {OnCreate.class, OnUpdate.class})
     private String patronymic;
 }
