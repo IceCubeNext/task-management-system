@@ -55,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto addComment(Long taskId, NewCommentDto commentDto) {
         UserDetailsImpl details = getUserDetails();
         Task task = taskService.findById(taskId);
-        checkCommentChangePermissions(task);
+        checkCommentAddPermissions(task);
         Comment comment = mapper.toModel(commentDto);
         comment.setAuthor(userService.findById(details.getId()));
         comment.setTask(task);
@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public CommentDto updateComment(Long taskId, Long id, NewCommentDto commentDto) {
         Comment comment = isCommentBelongToTask(taskId, id);
-        checkCommentChangePermissions(taskService.findById(taskId));
+        checkCommentChangePermissions(comment);
         if (StringUtils.hasText(commentDto.getTitle()) && !commentDto.getTitle().equals(comment.getTitle())) {
             comment.setTitle(commentDto.getTitle());
         }
@@ -80,7 +80,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void deleteComment(Long taskId, Long id) {
-        checkCommentChangePermissions(taskService.findById(taskId));
+        Comment comment = isCommentBelongToTask(taskId, id);
+        checkCommentChangePermissions(comment);
         repository.delete(isCommentBelongToTask(taskId, id));
     }
 
@@ -96,7 +97,16 @@ public class CommentServiceImpl implements CommentService {
         return comment;
     }
 
-    private void checkCommentChangePermissions(Task task) {
+    private void checkCommentChangePermissions(Comment comment) {
+        UserDetailsImpl details = getUserDetails();
+        if (details.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            if (!Objects.equals(details.getId(), comment.getAuthor().getId())) {
+                throw new AuthorizationDeniedException("Access denied. You do not have permission");
+            }
+        }
+    }
+
+    private void checkCommentAddPermissions(Task task) {
         UserDetailsImpl details = getUserDetails();
         if (details.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
                 && !Objects.equals(details.getId(), task.getPerformer().getId())) {

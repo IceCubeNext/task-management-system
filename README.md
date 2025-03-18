@@ -43,7 +43,7 @@
 
 ### Как запустить проект:
 
-Клонировать репозиторий и перейти в него в командной строке:
+Клонировать репозиторий:
 
 ```
 git clone https://github.com/IceCubeNext/task-management-system.git

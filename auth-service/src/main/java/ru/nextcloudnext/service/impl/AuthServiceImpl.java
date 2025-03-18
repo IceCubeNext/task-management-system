@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPatronymic(patronymic);
         user.setLogin(login);
         user.setPassword(passwordEncoder.encode(String.valueOf(password)));
-        user.setRoles(Set.of(roleRepository.getRoleById(1L)));
+        user.setRoles(Set.of(roleRepository.getRoleById(2L)));
         user.setUserStatus(UserStatus.ACTIVE);
         userRepository.save(user);
 
