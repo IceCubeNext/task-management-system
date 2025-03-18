@@ -71,7 +71,7 @@ docker-compose up
 
 **http://localhost:8181/swagger-ui/index.html#/**
 
-## Веб интерфейс
+## Веб-интерфейс
 
 **http://localhost:8282/**
 
@@ -81,7 +81,7 @@ docker-compose up
 
 Пользователь 2: логин **guest**, пароль **guest**
 
-## Исходники для веб интерфейса
+## Исходники для веб-интерфейса
 
 **https://github.com/IceCubeNext/task-management-system-front.git**
 
