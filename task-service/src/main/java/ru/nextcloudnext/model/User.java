@@ -18,6 +18,8 @@ public class User {
     @Id
     private Long id;
     @Column
+    private String login;
+    @Column
     private String firstname;
     @Column
     private String lastname;

@@ -37,12 +37,14 @@ class UserControllerIntegrationTest {
     void setUp() {
         user = new NewUserDto();
         user.setId(4L);
+        user.setLogin("new_user");
         user.setFirstname("Иван");
         user.setLastname("Иванов");
         user.setPatronymic("Иванович");
 
         user2 = new NewUserDto();
         user2.setId(5L);
+        user2.setLogin("new_user2");
         user2.setFirstname("Петр");
         user2.setLastname("Петров");
         user2.setPatronymic("Петрович");

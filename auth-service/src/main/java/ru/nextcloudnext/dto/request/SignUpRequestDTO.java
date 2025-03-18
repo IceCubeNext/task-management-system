@@ -21,9 +21,12 @@ public class SignUpRequestDTO {
     @NotNull(message = "{password should not be null}")
     private char[] password;
     @Schema(description = "Имя", example = "Иван")
+    @NotNull(message = "{firstName should not be null}")
     private String firstName;
     @Schema(description = "Фамилия", example = "Иванов")
+    @NotNull(message = "{lastName should not be null}")
     private String lastName;
     @Schema(description = "Отчество", example = "Иванович")
+    @NotNull(message = "{patronymic should not be null}")
     private String patronymic;
 }

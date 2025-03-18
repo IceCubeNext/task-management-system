@@ -95,6 +95,7 @@ public class AuthServiceImpl implements AuthService {
 
         return AuthResponseDTO.builder()
                 .id(user.getId())
+                .login(user.getLogin())
                 .firstName(user.getFirstname())
                 .lastName(user.getLastname())
                 .patronymic(user.getPatronymic())

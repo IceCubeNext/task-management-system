@@ -20,6 +20,9 @@ public class NewUserDto {
     @NotNull(message = "{id should not be null}", groups = OnCreate.class)
     @PositiveOrZero(message = "{id should be positive or zero}", groups = {OnCreate.class, OnUpdate.class})
     private Long id;
+    @Schema(description = "Логин пользователя", example = "admin")
+    @NotNull(message = "{login should not be null}", groups = OnCreate.class)
+    private String login;
     @Schema(description = "Имя", example = "Иван")
     @NotBlank(message = "{firstname should not be blank}", groups = OnCreate.class)
     @Size(min = 1, max = 255, message = "{firstname field's size should be from 1 to 255 letters}", groups = {OnCreate.class, OnUpdate.class})

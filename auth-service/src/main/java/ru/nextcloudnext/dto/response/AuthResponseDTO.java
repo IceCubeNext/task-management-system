@@ -12,6 +12,8 @@ import lombok.*;
 public class AuthResponseDTO {
     @Schema(description = "Идентификатор", example = "1")
     private Long id;
+    @Schema(description = "Логин", example = "admin")
+    private String login;
     @Schema(description = "Имя", example = "Иван")
     private String firstName;
     @Schema(description = "Фамилия", example = "Иванов")

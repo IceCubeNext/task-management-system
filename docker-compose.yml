@@ -56,3 +56,9 @@ services:
       - POSTGRES_DB=task_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1
+
+  frontend-server:
+    build: ./frontend
+    container_name: frontend-server
+    ports:
+      - "8282:80"

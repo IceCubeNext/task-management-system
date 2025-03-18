@@ -1,6 +1,8 @@
 package ru.nextcloudnext.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ public class TaskServiceImpl implements TaskService {
     private final CommentMapper commentMapper;
 
     @Override
+    @PostAuthorize("hasRole('ADMIN') or authentication.name == returnObject.performer.login")
     @Transactional(readOnly = true)
     public Task findById(Long id) {
         return repository.findById(id)
@@ -76,6 +79,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public TaskDto addTask(NewTaskDto taskDto) {
         Task task = mapper.toModel(taskDto);
         task.setAuthor(userService.findById(taskDto.getAuthor().getId()));
@@ -87,41 +91,39 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto updateTask(Long id, NewTaskDto taskDto) {
         Task task = findById(id);
-        checkTaskChangePermissions(task);
-        if (StringUtils.hasText(taskDto.getTitle()) && !taskDto.getTitle().equals(task.getTitle())) {
-            task.setTitle(taskDto.getTitle());
+        UserDetailsImpl details = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (details == null) {
+            throw new AuthorizationDeniedException("Access denied. Are you anonymous user?");
         }
-        if (StringUtils.hasText(taskDto.getDescription()) && !taskDto.getDescription().equals(task.getDescription())) {
-            task.setDescription(taskDto.getDescription());
+        boolean isAdmin = details.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            if (StringUtils.hasText(taskDto.getTitle()) && !taskDto.getTitle().equals(task.getTitle())) {
+                task.setTitle(taskDto.getTitle());
+            }
+            if (StringUtils.hasText(taskDto.getDescription()) && !taskDto.getDescription().equals(task.getDescription())) {
+                task.setDescription(taskDto.getTitle());
+            }
+            if (taskDto.getPriority() != null) {
+                task.setPriority(taskDto.getPriority());
+            }
+            if (taskDto.getPerformer() != null && !Objects.equals(taskDto.getPerformer().getId(), task.getPerformer().getId())) {
+                task.setPerformer(userService.findById(taskDto.getPerformer().getId()));
+            }
         }
+
         if (taskDto.getStatus() != null) {
             task.setStatus(taskDto.getStatus());
         }
-        if (taskDto.getPriority() != null) {
-            task.setPriority(taskDto.getPriority());
-        }
-        if (taskDto.getPerformer() != null && !Objects.equals(taskDto.getPerformer().getId(), task.getPerformer().getId())) {
-            task.setPerformer(userService.findById(taskDto.getPerformer().getId()));
-        }
+
         return mapper.toDto(repository.save(task));
     }
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteTask(Long id) {
         Task task = findById(id);
-        checkTaskChangePermissions(task);
         repository.delete(task);
-    }
-
-    private void checkTaskChangePermissions(Task task) {
-        UserDetailsImpl details = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (details == null) {
-            throw new AuthorizationDeniedException("Access denied. Are you anonymous user?");
-        }
-        if (details.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
-                && !Objects.equals(details.getId(), task.getAuthor().getId())) {
-            throw new AuthorizationDeniedException("Access denied. You do not have permission to perform this task");
-        }
     }
 }
