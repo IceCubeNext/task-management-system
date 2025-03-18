@@ -94,6 +94,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = findById(id);
         UserDetailsImpl details = getUserDetails();
         boolean isAdmin = details.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        boolean isPerformer = details.getId().equals(task.getPerformer().getId());
 
         if (isAdmin) {
             if (StringUtils.hasText(taskDto.getTitle()) && !taskDto.getTitle().equals(task.getTitle())) {
@@ -110,7 +111,7 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-        if (taskDto.getStatus() != null) {
+        if (taskDto.getStatus() != null && (isPerformer || isAdmin)) {
             task.setStatus(taskDto.getStatus());
         }
         TaskDto updatedTask = mapper.toDto(repository.save(task));
