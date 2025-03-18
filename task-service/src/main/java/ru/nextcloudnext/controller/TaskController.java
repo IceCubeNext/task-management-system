@@ -63,7 +63,7 @@ public class TaskController {
 
     @Operation(
             summary = "Добавление задачи",
-            description = "Добавление новой задачи"
+            description = "Добавление новой задачи. Добавить задачу может только пользователь с правами администратора"
     )
     @SecurityRequirement(name = "JWT")
     @PostMapping
@@ -75,7 +75,7 @@ public class TaskController {
 
     @Operation(
             summary = "Обновление задачи",
-            description = "Обновление задачи. Для обновления необходимо быть автором задачи либо администратором"
+            description = "Обновление задачи. Для обновления необходимо быть исполнителем задачи либо администратором. Если вы исполнитель, возможно поменять только статус, остальное игнорируется"
     )
     @SecurityRequirement(name = "JWT")
     @PatchMapping("/{id}")
@@ -88,7 +88,7 @@ public class TaskController {
 
     @Operation(
             summary = "Удаление задачи",
-            description = "Удаление задачи. Для удаления необходимо быть автором задачи либо администратором"
+            description = "Удаление задачи. Для удаления необходимо быть пользователем с правами администратора"
     )
     @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{id}")

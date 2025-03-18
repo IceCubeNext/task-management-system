@@ -8,13 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.nextcloudnext.dto.*;
-import ru.nextcloudnext.exception.ConflictException;
 import ru.nextcloudnext.exception.NotFoundException;
 import ru.nextcloudnext.jwt.UserDetailsImpl;
 import ru.nextcloudnext.mapper.CommentMapper;
 import ru.nextcloudnext.model.Comment;
 import ru.nextcloudnext.model.Task;
-import ru.nextcloudnext.model.User;
 import ru.nextcloudnext.repository.CommentRepository;
 import ru.nextcloudnext.service.CommentService;
 import ru.nextcloudnext.service.TaskService;
@@ -43,6 +41,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public List<CommentDto> getComments(Integer skip, Integer take, Long taskId) {
+        taskService.findById(taskId);
         if (take == null || skip == null) {
             return repository.findAllByTaskId(taskId).stream().map(mapper::toDto).collect(Collectors.toList());
         } else {
@@ -54,11 +53,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentDto addComment(Long taskId, NewCommentDto commentDto) {
-        User user = userService.findById(commentDto.getAuthor().getId());
+        UserDetailsImpl details = getUserDetails();
         Task task = taskService.findById(taskId);
         checkCommentChangePermissions(task);
         Comment comment = mapper.toModel(commentDto);
-        comment.setAuthor(user);
+        comment.setAuthor(userService.findById(details.getId()));
         comment.setTask(task);
         return mapper.toDto(repository.save(comment));
     }
@@ -90,7 +89,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = findById(commentId);
         taskService.findById(taskId);
         if (!Objects.equals(comment.getTask().getId(), taskId)) {
-            throw new ConflictException(
+            throw new IllegalArgumentException(
                     String.format("Comment with id=%d does not belong to task with id=%d", commentId, taskId)
             );
         }
@@ -98,13 +97,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void checkCommentChangePermissions(Task task) {
+        UserDetailsImpl details = getUserDetails();
+        if (details.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
+                && !Objects.equals(details.getId(), task.getPerformer().getId())) {
+            throw new AuthorizationDeniedException("Access denied. You do not have permission");
+        }
+    }
+
+    private UserDetailsImpl getUserDetails() {
         UserDetailsImpl details = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (details == null) {
             throw new AuthorizationDeniedException("Access denied. Are you anonymous user?");
         }
-        if (details.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
-                && !Objects.equals(details.getId(), task.getAuthor().getId())) {
-            throw new AuthorizationDeniedException("Access denied. You do not have permission");
-        }
+        return details;
     }
 }

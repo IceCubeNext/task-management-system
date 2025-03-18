@@ -73,6 +73,12 @@ docker-compose up
 
 **http://localhost:8282/**
 
+Администратор: логин **admin**, пароль **admin**
+
+Пользователь 1: логин **user**, пароль **user**
+
+Пользователь 2: логин **guest**, пароль **guest**
+
 ## Исходники для веб интерфейса
 
 **https://github.com/IceCubeNext/task-management-system-front.git**

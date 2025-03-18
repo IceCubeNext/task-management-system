@@ -82,7 +82,8 @@ public class TaskServiceImpl implements TaskService {
     @PreAuthorize("hasRole('ADMIN')")
     public TaskDto addTask(NewTaskDto taskDto) {
         Task task = mapper.toModel(taskDto);
-        task.setAuthor(userService.findById(taskDto.getAuthor().getId()));
+        UserDetailsImpl details = getUserDetails();
+        task.setAuthor(userService.findById(details.getId()));
         task.setPerformer(userService.findById(taskDto.getPerformer().getId()));
         return mapper.toDto(repository.save(task));
     }
@@ -91,10 +92,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto updateTask(Long id, NewTaskDto taskDto) {
         Task task = findById(id);
-        UserDetailsImpl details = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (details == null) {
-            throw new AuthorizationDeniedException("Access denied. Are you anonymous user?");
-        }
+        UserDetailsImpl details = getUserDetails();
         boolean isAdmin = details.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         if (isAdmin) {
@@ -115,8 +113,9 @@ public class TaskServiceImpl implements TaskService {
         if (taskDto.getStatus() != null) {
             task.setStatus(taskDto.getStatus());
         }
-
-        return mapper.toDto(repository.save(task));
+        TaskDto updatedTask = mapper.toDto(repository.save(task));
+        updatedTask.setComments(commentRepository.findAllByTaskId(id).stream().map(commentMapper::toDto).collect(toList()));
+        return updatedTask;
     }
 
     @Override
@@ -125,5 +124,13 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTask(Long id) {
         Task task = findById(id);
         repository.delete(task);
+    }
+
+    private UserDetailsImpl getUserDetails() {
+        UserDetailsImpl details = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (details == null) {
+            throw new AuthorizationDeniedException("Access denied. Are you anonymous user?");
+        }
+        return details;
     }
 }

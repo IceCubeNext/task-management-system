@@ -31,9 +31,6 @@ public class NewTaskDto {
     @Schema(description = "Приоритет")
     @NotNull(message = "{priority should not be null}", groups = OnCreate.class)
     private Priority priority;
-    @Schema(description = "Автор задачи")
-    @NotNull(message = "{author should not be null}", groups = OnCreate.class)
-    private UserDto author;
     @Schema(description = "Исполнитель задачи")
     @NotNull(message = "{performer should not be null}", groups = OnCreate.class)
     private UserDto performer;

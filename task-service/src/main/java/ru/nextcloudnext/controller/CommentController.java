@@ -25,7 +25,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(
-            summary = "Получение комментарив к задаче",
+            summary = "Получение комментариев к задаче",
             description = "Получение комментариев к задаче по ее id"
     )
     @SecurityRequirement(name = "JWT")
@@ -43,7 +43,7 @@ public class CommentController {
 
     @Operation(
             summary = "Добавление комментария",
-            description = "Добавление комментария к задаче. Для добавления необходимо быть автором задачи либо администратором"
+            description = "Добавление комментария к задаче. Для добавления необходимо быть исполнителем задачи либо администратором"
     )
     @SecurityRequirement(name = "JWT")
     @PostMapping("/{taskId}/comments")
@@ -58,7 +58,7 @@ public class CommentController {
 
     @Operation(
             summary = "Обновление комментария",
-            description = "Обновление комментария к задаче. Для обновления необходимо быть автором задачи либо администратором"
+            description = "Обновление комментария к задаче. Для обновления необходимо быть исполнителем задачи либо администратором"
     )
     @SecurityRequirement(name = "JWT")
     @PatchMapping("/{taskId}/comments/{id}")
@@ -74,7 +74,7 @@ public class CommentController {
 
     @Operation(
             summary = "Удаление комментария",
-            description = "Удаление комментария к задаче. Для удаления необходимо быть автором задачи либо администратором"
+            description = "Удаление комментария к задаче. Для удаления необходимо быть исполнителем задачи либо администратором"
     )
     @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{taskId}/comments/{id}")

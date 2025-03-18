@@ -2,7 +2,6 @@ package ru.nextcloudnext.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import ru.nextcloudnext.model.Marker.*;
@@ -23,7 +22,4 @@ public class NewCommentDto {
     @NotBlank(message = "{title should not be blank}", groups = OnCreate.class)
     @Size(min = 1, max = 5000, groups = {OnCreate.class, OnUpdate.class}, message = "{description size should be from 1 to 5000 letters}")
     private String description;
-    @Schema(description = "Автор комментария")
-    @NotNull(message = "{author should not be null}", groups = OnCreate.class)
-    private UserDto author;
 }
