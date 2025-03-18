@@ -41,7 +41,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public List<CommentDto> getComments(Integer skip, Integer take, Long taskId) {
-        taskService.findById(taskId);
+        taskService.getTaskById(taskId);
         if (take == null || skip == null) {
             return repository.findAllByTaskId(taskId).stream().map(mapper::toDto).collect(Collectors.toList());
         } else {
